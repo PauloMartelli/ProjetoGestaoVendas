@@ -1,4 +1,5 @@
 using ProjetoGestaoVendas.Dominio.Entidades;
+namespace ProjetoGestaoVendas.Aplicacao.Contratos;
 
 public interface IVendaApp
 {

@@ -1,3 +1,4 @@
+using ProjetoGestaoVendas.Aplicacao.Contratos;
 using ProjetoGestaoVendas.Dominio.Entidades;
 using ProjetoGestaoVendas.Repositorio.Contratos;
 
