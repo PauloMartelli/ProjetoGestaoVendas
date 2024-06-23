@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\ProjetoGestaoVendas.Dominio\ProjetoGestaoVendas.Dominio.csproj" />
+    <ProjectReference Include="..\ProjetoGestaoVendas.Repositorio\ProjetoGestaoVendas.Repositorio.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+</Project>

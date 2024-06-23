@@ -5,6 +5,10 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjetoGestaoVendas.Dominio", "ProjetoGestaoVendas.Dominio\ProjetoGestaoVendas.Dominio.csproj", "{43485839-EF0B-45FD-B359-3E66AEEC197B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjetoGestaoVendas.Repositorio", "ProjetoGestaoVendas.Repositorio\ProjetoGestaoVendas.Repositorio.csproj", "{A306D185-AFF0-403D-B4A8-EB1AC2F57DDC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjetoGestaoVendas.Aplicacao", "ProjetoGestaoVendas.Aplicacao\ProjetoGestaoVendas.Aplicacao.csproj", "{8031BA35-3AB0-44F7-B668-7B7B14D1D6BD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +22,13 @@ Global
 		{43485839-EF0B-45FD-B359-3E66AEEC197B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43485839-EF0B-45FD-B359-3E66AEEC197B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{43485839-EF0B-45FD-B359-3E66AEEC197B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A306D185-AFF0-403D-B4A8-EB1AC2F57DDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A306D185-AFF0-403D-B4A8-EB1AC2F57DDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A306D185-AFF0-403D-B4A8-EB1AC2F57DDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A306D185-AFF0-403D-B4A8-EB1AC2F57DDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8031BA35-3AB0-44F7-B668-7B7B14D1D6BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8031BA35-3AB0-44F7-B668-7B7B14D1D6BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8031BA35-3AB0-44F7-B668-7B7B14D1D6BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8031BA35-3AB0-44F7-B668-7B7B14D1D6BD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
