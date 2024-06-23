@@ -111,8 +111,6 @@ public class VendaRepositorio : IVendaRepositorio
                 command.Parameters.Add(new Microsoft.Data.SqlClient.SqlParameter("@VendaID", venda.ID));
                 command.Parameters.Add(new Microsoft.Data.SqlClient.SqlParameter("@Valor", venda.Valor));
                 command.Parameters.Add(new Microsoft.Data.SqlClient.SqlParameter("@TipoPagamento", (int)venda.TipoPagamento));
-                command.Parameters.Add(new Microsoft.Data.SqlClient.SqlParameter("@DataEHora", venda.DataEHora));
-                command.Parameters.Add(new Microsoft.Data.SqlClient.SqlParameter("@Ativo", venda.Ativo));
 
                 await command.ExecuteNonQueryAsync();
             }
