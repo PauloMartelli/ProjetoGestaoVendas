@@ -8,5 +8,5 @@ public class Venda
     public decimal Valor { get; set; }
     public TipoPagamento TipoPagamento { get; set; }
     public DateTime DataEHora { get; set; }
-    public bool Ativo { get; set; }
+    public bool Ativo { get; set; } = true;
 }
