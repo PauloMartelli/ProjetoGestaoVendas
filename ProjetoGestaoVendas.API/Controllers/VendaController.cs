@@ -3,100 +3,104 @@ using ProjetoGestaoVendas.API.Models.Venda.Requisicao;
 using ProjetoGestaoVendas.Aplicacao.Contratos;
 using ProjetoGestaoVendas.Dominio.Entidades;
 
-namespace ProjetoGestaoVendas.API.Controllers;
-
-[ApiController]
-[Route("[Controller]")]
-public class VendaController : Controller
+namespace ProjetoGestaoVendas.API.Controllers
 {
-    private readonly IVendaApp _vendaApp;
-
-    public VendaController(IVendaApp vendaApp)
+    [ApiController]
+    [Route("vendas")]
+    public class VendaController : ControllerBase
     {
-        _vendaApp = vendaApp;
-    }
+        private readonly IVendaApp _vendaApp;
 
-    [HttpPost("Adicionar")]
-    public async Task<IActionResult> AdicionarVendaAsync([FromBody] VendaCriar venda)
-    {
-        try
+        public VendaController(IVendaApp vendaApp)
         {
-            var vendaId = await _vendaApp.AdicionarVendaAsync(new Venda()
-            {
-                Valor = venda.Valor,
-                TipoPagamento = venda.TipoPagamento,
-                DataEHora = DateTime.Now
-            });
-            return Ok(new { id = vendaId });
+            _vendaApp = vendaApp;
         }
-        catch (Exception ex)
-        {
-            return StatusCode(500, "Ocorreu um erro ao adicionar a venda: " + ex.Message);
-        }
-    }
 
-    [HttpGet("Obter/{id}")]
-    public async Task<IActionResult> ObterVendaPorIDAsync(int id)
-    {
-        try
+        [HttpPost("criar")]
+        public async Task<IActionResult> AdicionarVenda([FromBody] VendaCriar vendaCriar)
         {
-            var venda = await _vendaApp.ObterVendaPorIDAsync(id);
-            if (venda == null)
+            try
             {
-                return NotFound();
+                Venda venda = new Venda
+                {
+                    Valor = vendaCriar.Valor,
+                    TipoPagamentoId = vendaCriar.TipoPagamentoId,
+                    DataEHora = DateTime.Now
+                };
+
+                var vendaId = await _vendaApp.AdicionarVendaAsync(venda);
+                return Ok(vendaId);
             }
-            return Ok(venda);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, "Ocorreu um erro ao obter a venda: " + ex.Message);
-        }
-    }
-
-    [HttpGet("Listar")]
-    public async Task<IActionResult> ObterVendasAsync()
-    {
-        try
-        {
-            var vendas = await _vendaApp.ObterVendasAsync();
-            return Ok(vendas);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, "Ocorreu um erro ao obter as vendas: " + ex.Message);
-        }
-    }
-
-    [HttpPut("Atualizar")]
-    public async Task<IActionResult> AtualizarVendaAsync([FromBody] VendaAtualizar venda)
-    {
-        try
-        {
-            await _vendaApp.AtualizarVendaAsync(new Venda()
+            catch (Exception ex)
             {
-                ID = venda.ID,
-                Valor = venda.Valor,
-                TipoPagamento = venda.TipoPagamento
-            });
-            return NoContent();
+                return BadRequest($"Erro ao adicionar a venda: {ex.Message}");
+            }
         }
-        catch (Exception ex)
-        {
-            return StatusCode(500, "Ocorreu um erro ao atualizar a venda: " + ex.Message);
-        }
-    }
 
-    [HttpDelete("Deletar/{id}")]
-    public async Task<IActionResult> DesativarVendaAsync(int id)
-    {
-        try
+        [HttpGet("obter/{vendaID}")]
+        public async Task<IActionResult> ObterVendaPorID(int vendaID)
         {
-            await _vendaApp.DesativarVendaAsync(id);
-            return NoContent();
+            try
+            {
+                var venda = await _vendaApp.ObterVendaPorIDAsync(vendaID);
+                if (venda == null)
+                    return NotFound();
+
+                return Ok(venda);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Erro ao obter a venda: {ex.Message}");
+            }
         }
-        catch (Exception ex)
+
+        [HttpGet("listar")]
+        public async Task<IActionResult> ObterTodasVendas()
         {
-            return StatusCode(500, "Ocorreu um erro ao desativar a venda: " + ex.Message);
+            try
+            {
+                var vendas = await _vendaApp.ObterVendasAsync();
+                return Ok(vendas);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Erro ao obter as vendas: {ex.Message}");
+            }
+        }
+
+        [HttpPut("atualizar/{vendaID}")]
+        public async Task<IActionResult> AtualizarVenda(int vendaID, [FromBody] VendaAtualizar vendaAtualizar)
+        {
+            try
+            {
+                var venda = new Venda
+                {
+                    VendaID = vendaID,
+                    Valor = vendaAtualizar.Valor,
+                    TipoPagamentoId = vendaAtualizar.TipoPagamentoId
+                };
+
+                await _vendaApp.AtualizarVendaAsync(venda);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Erro ao atualizar a venda: {ex.Message}");
+            }
+        }
+
+        [HttpDelete("deletar/{vendaID}")]
+        public async Task<IActionResult> DesativarVenda(int vendaID)
+        {
+            try
+            {
+                await _vendaApp.DesativarVendaAsync(vendaID);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Erro ao desativar a venda: {ex.Message}");
+            }
         }
     }
 }

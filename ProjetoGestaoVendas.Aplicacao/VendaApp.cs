@@ -16,7 +16,7 @@ namespace ProjetoGestaoVendas.Aplicacao
         public async Task<int> AdicionarVendaAsync(Venda venda)
         {
             if (venda == null)
-                throw new ArgumentNullException("A venda não pode ser nula.");
+                throw new ArgumentNullException(nameof(venda), "A venda não pode ser nula.");
 
             return await _vendaRepositorio.AdicionarVendaAsync(venda);
         }
@@ -24,12 +24,16 @@ namespace ProjetoGestaoVendas.Aplicacao
         public async Task<Venda> ObterVendaPorIDAsync(int vendaID)
         {
             if (vendaID <= 0)
-                throw new ArgumentException("O ID da venda deve ser maior que zero.");
+                throw new ArgumentException("ID da venda deve ser maior que zero.");
 
-            return await _vendaRepositorio.ObterVendaPorIDAsync(vendaID);
+            var venda = await _vendaRepositorio.ObterVendaPorIDAsync(vendaID);
+            if (venda == null)
+                throw new KeyNotFoundException("Venda não encontrada.");
+
+            return venda;
         }
 
-        public async Task<List<Venda>> ObterVendasAsync()
+        public async Task<IEnumerable<Venda>> ObterVendasAsync()
         {
             return await _vendaRepositorio.ObterVendasAsync();
         }
@@ -37,7 +41,10 @@ namespace ProjetoGestaoVendas.Aplicacao
         public async Task AtualizarVendaAsync(Venda venda)
         {
             if (venda == null)
-                throw new ArgumentNullException("A venda não pode ser nula.");
+                throw new ArgumentNullException(nameof(venda), "A venda não pode ser nula.");
+
+            if (venda.VendaID <= 0)
+                throw new ArgumentException("ID da venda deve ser maior que zero.");
 
             await _vendaRepositorio.AtualizarVendaAsync(venda);
         }
@@ -45,9 +52,9 @@ namespace ProjetoGestaoVendas.Aplicacao
         public async Task DesativarVendaAsync(int vendaID)
         {
             if (vendaID <= 0)
-                throw new ArgumentException("O ID da venda deve ser maior que zero.");
+                throw new ArgumentException("ID da venda deve ser maior que zero.");
 
-            await _vendaRepositorio.ExcluirVendaAsync(vendaID);
+            await _vendaRepositorio.DesativarVendaAsync(vendaID);
         }
     }
 }

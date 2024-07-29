@@ -22,6 +22,23 @@ namespace ProjetoGestaoVendas.Repositorio.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("ProjetoGestaoVendas.Dominio.Entidades.TipoPagamento", b =>
+                {
+                    b.Property<int>("TipoPagamentoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TipoPagamentoId"), 1L, 1);
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("varchar(30)");
+
+                    b.HasKey("TipoPagamentoId");
+
+                    b.ToTable("TipoPagamento");
+                });
+
             modelBuilder.Entity("ProjetoGestaoVendas.Dominio.Entidades.Venda", b =>
                 {
                     b.Property<int>("ID")
@@ -38,7 +55,7 @@ namespace ProjetoGestaoVendas.Repositorio.Migrations
                         .HasPrecision(0)
                         .HasColumnType("datetime2(0)");
 
-                    b.Property<int>("TipoPagamento")
+                    b.Property<int>("TipoPagamentoId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Valor")
@@ -47,7 +64,25 @@ namespace ProjetoGestaoVendas.Repositorio.Migrations
 
                     b.HasKey("ID");
 
+                    b.HasIndex("TipoPagamentoId");
+
                     b.ToTable("Vendas");
+                });
+
+            modelBuilder.Entity("ProjetoGestaoVendas.Dominio.Entidades.Venda", b =>
+                {
+                    b.HasOne("ProjetoGestaoVendas.Dominio.Entidades.TipoPagamento", "TipoPagamento")
+                        .WithMany("Vendas")
+                        .HasForeignKey("TipoPagamentoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TipoPagamento");
+                });
+
+            modelBuilder.Entity("ProjetoGestaoVendas.Dominio.Entidades.TipoPagamento", b =>
+                {
+                    b.Navigation("Vendas");
                 });
 #pragma warning restore 612, 618
         }

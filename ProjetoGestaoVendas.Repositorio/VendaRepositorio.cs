@@ -1,137 +1,80 @@
-using Microsoft.EntityFrameworkCore;
-using ProjetoGestaoVendas.Dominio.Entidades;
-using ProjetoGestaoVendas.Dominio.Enumeradores;
-using ProjetoGestaoVendas.Repositorio.contexto;
-using ProjetoGestaoVendas.Repositorio.Contratos;
+using Dapper;
+using System.Collections.Generic;
 using System.Data;
-
-namespace ProjetoGestaoVendas.Repositorio;
+using System.Data.SqlClient;
+using System.Threading.Tasks;
+using ProjetoGestaoVendas.Dominio.Entidades;
+using ProjetoGestaoVendas.Repositorio.Contratos;
+using Microsoft.Data.SqlClient;
 
 public class VendaRepositorio : IVendaRepositorio
 {
-    private readonly Contexto _contexto;
+    private readonly string _connectionString;
 
-    public VendaRepositorio(Contexto contexto)
+    public VendaRepositorio(string connectionString)
     {
-        _contexto = contexto;
+        _connectionString = connectionString;
     }
+
+    private IDbConnection GetConnection() => new SqlConnection(_connectionString);
 
     public async Task<int> AdicionarVendaAsync(Venda venda)
     {
-        using (var connection = _contexto.Database.GetDbConnection())
+        using (var connection = GetConnection())
         {
-            await connection.OpenAsync();
-            using (var command = connection.CreateCommand())
-            {
-                command.CommandText = "AdicionarVenda";
-                command.CommandType = CommandType.StoredProcedure;
+            var parameters = new DynamicParameters();
+            parameters.Add("@Valor", venda.Valor);
+            parameters.Add("@TipoPagamentoId", venda.TipoPagamentoId);
+            parameters.Add("@DataEHora", venda.DataEHora);
+            parameters.Add("@Ativo", venda.Ativo);
 
-                command.Parameters.Add(new Microsoft.Data.SqlClient.SqlParameter("@Valor", venda.Valor));
-                command.Parameters.Add(new Microsoft.Data.SqlClient.SqlParameter("@TipoPagamento", (int)venda.TipoPagamento));
-                command.Parameters.Add(new Microsoft.Data.SqlClient.SqlParameter("@DataEHora", venda.DataEHora));
-                command.Parameters.Add(new Microsoft.Data.SqlClient.SqlParameter("@Ativo", venda.Ativo));
-
-                var result = await command.ExecuteScalarAsync();
-                return Convert.ToInt32(result);
-            }
+            var vendaID = await connection.ExecuteScalarAsync<int>("sp_AdicionarVenda", parameters, commandType: CommandType.StoredProcedure);
+            return vendaID;
         }
     }
 
     public async Task<Venda> ObterVendaPorIDAsync(int vendaID)
     {
-        using (var connection = _contexto.Database.GetDbConnection())
+        using (var connection = GetConnection())
         {
-            await connection.OpenAsync();
-            using (var command = connection.CreateCommand())
-            {
-                command.CommandText = "ObterVendaPorID";
-                command.CommandType = CommandType.StoredProcedure;
+            var parameters = new DynamicParameters();
+            parameters.Add("@VendaID", vendaID);
 
-                command.Parameters.Add(new Microsoft.Data.SqlClient.SqlParameter("@VendaID", vendaID));
-
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    if (await reader.ReadAsync())
-                    {
-                        return new Venda
-                        {
-                            ID = reader.GetInt32(0),
-                            Valor = reader.GetDecimal(1),
-                            TipoPagamento = (TipoPagamento)reader.GetInt32(2),
-                            DataEHora = reader.GetDateTime(3),
-                            Ativo = reader.GetBoolean(4)
-                        };
-                    }
-                    return null;
-                }
-            }
+            return await connection.QuerySingleOrDefaultAsync<Venda>("sp_ObterVendaPorId", parameters, commandType: CommandType.StoredProcedure);
         }
     }
 
-    public async Task<List<Venda>> ObterVendasAsync()
+    public async Task<IEnumerable<Venda>> ObterVendasAsync()
     {
-        var vendas = new List<Venda>();
-        using (var connection = _contexto.Database.GetDbConnection())
+        using (var connection = GetConnection())
         {
-            await connection.OpenAsync();
-            using (var command = connection.CreateCommand())
-            {
-                command.CommandText = "ObterVendas";
-                command.CommandType = CommandType.StoredProcedure;
-
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        vendas.Add(new Venda
-                        {
-                            ID = reader.GetInt32(0),
-                            Valor = reader.GetDecimal(1),
-                            TipoPagamento = (TipoPagamento)reader.GetInt32(2),
-                            DataEHora = reader.GetDateTime(3),
-                            Ativo = reader.GetBoolean(4)
-                        });
-                    }
-                }
-            }
+            return await connection.QueryAsync<Venda>("sp_ObterVendas", commandType: CommandType.StoredProcedure);
         }
-        return vendas;
     }
 
     public async Task AtualizarVendaAsync(Venda venda)
     {
-        using (var connection = _contexto.Database.GetDbConnection())
+        using (var connection = GetConnection())
         {
-            await connection.OpenAsync();
-            using (var command = connection.CreateCommand())
-            {
-                command.CommandText = "AtualizarVenda";
-                command.CommandType = CommandType.StoredProcedure;
+            var parameters = new DynamicParameters();
+            parameters.Add("@VendaID", venda.VendaID);
+            parameters.Add("@Valor", venda.Valor);
+            parameters.Add("@TipoPagamentoId", venda.TipoPagamentoId);
+            parameters.Add("@DataEHora", venda.DataEHora);
+            parameters.Add("@Ativo", venda.Ativo);
 
-                command.Parameters.Add(new Microsoft.Data.SqlClient.SqlParameter("@VendaID", venda.ID));
-                command.Parameters.Add(new Microsoft.Data.SqlClient.SqlParameter("@Valor", venda.Valor));
-                command.Parameters.Add(new Microsoft.Data.SqlClient.SqlParameter("@TipoPagamento", (int)venda.TipoPagamento));
-
-                await command.ExecuteNonQueryAsync();
-            }
+            await connection.ExecuteAsync("sp_AtualizarVenda", parameters, commandType: CommandType.StoredProcedure);
         }
     }
 
-    public async Task<int> ExcluirVendaAsync(int vendaID)
+    public async Task DesativarVendaAsync(int vendaID)
     {
-        using (var connection = _contexto.Database.GetDbConnection())
+        using (var connection = GetConnection())
         {
-            await connection.OpenAsync();
-            using (var command = connection.CreateCommand())
-            {
-                command.CommandText = "DesativarVenda";
-                command.CommandType = CommandType.StoredProcedure;
+            var parameters = new DynamicParameters();
+            parameters.Add("@VendaID", vendaID);
 
-                command.Parameters.Add(new Microsoft.Data.SqlClient.SqlParameter("@VendaID", vendaID));
-
-                return await command.ExecuteNonQueryAsync();
-            }
+            await connection.ExecuteAsync("sp_DesativarVenda", parameters, commandType: CommandType.StoredProcedure);
         }
     }
 }
-

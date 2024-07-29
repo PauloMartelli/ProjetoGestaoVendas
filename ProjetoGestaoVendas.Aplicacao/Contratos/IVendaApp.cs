@@ -1,11 +1,14 @@
 using ProjetoGestaoVendas.Dominio.Entidades;
-namespace ProjetoGestaoVendas.Aplicacao.Contratos;
 
-public interface IVendaApp
+
+namespace ProjetoGestaoVendas.Aplicacao.Contratos
 {
-    public Task<int> AdicionarVendaAsync(Venda venda);
-    public Task<Venda> ObterVendaPorIDAsync(int vendaID);
-    public Task<List<Venda>> ObterVendasAsync();
-    public Task AtualizarVendaAsync(Venda venda);
-    public Task DesativarVendaAsync(int vendaID);
+    public interface IVendaApp
+    {
+        Task<int> AdicionarVendaAsync(Venda venda);
+        Task<Venda> ObterVendaPorIDAsync(int vendaID);
+        Task<IEnumerable<Venda>> ObterVendasAsync();
+        Task AtualizarVendaAsync(Venda venda);
+        Task DesativarVendaAsync(int vendaID);
+    }
 }

@@ -1,21 +1,31 @@
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using ProjetoGestaoVendas.Aplicacao;
 using ProjetoGestaoVendas.Aplicacao.Contratos;
-using ProjetoGestaoVendas.Repositorio;
-using ProjetoGestaoVendas.Repositorio.contexto;
 using ProjetoGestaoVendas.Repositorio.Contratos;
+using ProjetoGestaoVendas.Repositorio;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(builder =>
+    {
+        builder.WithOrigins("http://localhost:3000")
+            .SetIsOriginAllowedToAllowWildcardSubdomains()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
+// Configure Dapper repository
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddScoped<IVendaApp, VendaApp>();
-
-builder.Services.AddScoped<IVendaRepositorio, VendaRepositorio>();
-
-builder.Services.AddDbContext<Contexto>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<IVendaRepositorio>(provider => new VendaRepositorio(connectionString));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -28,12 +38,10 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseCors();
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

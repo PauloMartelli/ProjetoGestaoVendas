@@ -6,9 +6,7 @@ public interface IVendaRepositorio
 {
     Task<int> AdicionarVendaAsync(Venda venda);
     Task<Venda> ObterVendaPorIDAsync(int vendaID);
-    Task<List<Venda>> ObterVendasAsync();
+    Task<IEnumerable<Venda>> ObterVendasAsync();
     Task AtualizarVendaAsync(Venda venda);
-    Task<int> ExcluirVendaAsync(int vendaID);
+    Task DesativarVendaAsync(int vendaID);
 }
-
-
